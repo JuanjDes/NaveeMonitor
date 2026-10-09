@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#122923">
+    <meta name="description" content="Diagnóstico Bluetooth local para tu NAVEE NT5 Max.">
+    <title>NAVEE Monitor · BLE Explorer</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script type="module" src="./js/app.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="NAVEE Monitor, inicio">NAVEE <span>MONITOR</span></a>
+      <span class="version">Desarrollo · 01</span>
+    </header>
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">Diagnóstico Bluetooth</p>
+        <h1 id="page-title">Conoce tu patinete.<br><span>Empieza por conectar.</span></h1>
+        <p class="intro-copy">Un espacio para explorar los datos de tu NAVEE NT5 Max, paso a paso y desde tu móvil.</p>
+      </section>
+
+      <section class="connection-card" aria-labelledby="connection-title">
+        <div class="card-heading">
+          <div><p class="eyebrow">BLE Explorer</p><h2 id="connection-title">Conexión al dispositivo</h2></div>
+          <span id="connection-state" class="status" data-state="DISCONNECTED">Desconectado</span>
+        </div>
+        <p id="connection-message" class="message" role="status" aria-live="polite" aria-atomic="true">Comprobando compatibilidad del navegador…</p>
+        <div class="actions">
+          <button id="connect" class="primary" type="button" disabled>Conectar</button>
+          <button id="disconnect" class="secondary" type="button" disabled>Desconectar</button>
+        </div>
+        <dl class="device-details">
+          <div><dt>Nombre Bluetooth</dt><dd id="device-name">Sin seleccionar</dd></div>
+          <div><dt>ID del navegador</dt><dd id="device-id">No disponible</dd></div>
+        </dl>
+        <p class="footnote">El nombre no confirma el modelo. El ID lo proporciona el navegador; no es el número de serie del patinete.</p>
+      </section>
+
+      <section class="guide" aria-labelledby="guide-title">
+        <h2 id="guide-title">Antes de conectar</h2>
+        <ol>
+          <li><span>01</span><div><h3>Prepara el patinete</h3><p>Enciéndelo, mantenlo cerca y activa el Bluetooth del teléfono.</p></div></li>
+          <li><span>02</span><div><h3>Libera la conexión</h3><p>Desconecta la app oficial si está conectada al patinete.</p></div></li>
+          <li><span>03</span><div><h3>Elige tu dispositivo</h3><p>Pulsa Conectar y selecciona tu patinete. El selector puede mostrar otros dispositivos cercanos.</p></div></li>
+        </ol>
+      </section>
+      <aside class="scope"><strong>Primera etapa: conexión.</strong> La exploración de servicios y el registro de datos llegarán en el siguiente paso. Esta versión no modifica parámetros del patinete.</aside>
+      <noscript><p class="scope">Activa JavaScript para utilizar la conexión Bluetooth.</p></noscript>
+    </main>
+    <footer>Datos locales <span aria-hidden="true">/</span> Sin telemetría externa <span aria-hidden="true">/</span> NAVEE NT5 Max</footer>
+  </body>
+</html>
