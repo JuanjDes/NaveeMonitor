@@ -6,7 +6,7 @@ El primer objetivo es **observar, leer, registrar y comprender** la interfaz BLE
 
 ## Estado actual
 
-Está implementada la primera etapa de conexión: interfaz móvil, selector Bluetooth, conexión/desconexión GATT, nombre e ID del dispositivo, y gestión de cancelaciones y errores. Las pruebas automatizadas usan dispositivos simulados; la conexión con el patinete real está pendiente de validación.
+Está implementada la primera etapa de conexión: interfaz móvil, selector Bluetooth, conexión/desconexión GATT, nombre e ID del dispositivo, y gestión de cancelaciones y errores. Las pruebas automatizadas usan dispositivos simulados. El 2026-10-09, el usuario confirmó varias conexiones y desconexiones correctas con su patinete desde el móvil. Las pruebas reales de pérdida de alcance, cancelaciones y recuperación ante errores siguen pendientes de confirmación.
 
 La siguiente etapa del **BLE Explorer** será enumerar los servicios y características autorizados. Todavía no hay UUID ni estructuras del protocolo confirmados, lecturas, notificaciones o registro de tramas. El dashboard y la interpretación de telemetría se desarrollarán después de obtener y analizar datos reales. La instalación PWA y el uso sin conexión también están pendientes.
 

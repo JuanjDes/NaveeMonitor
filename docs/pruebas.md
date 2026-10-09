@@ -6,7 +6,7 @@ Ejecutar `npm test` con Node.js 20 o posterior. No requiere `npm install`.
 
 Los dispositivos BLE se simulan para probar selección, cancelación, permisos denegados, errores GATT, desconexión voluntaria e inesperada, intentos duplicados, respuestas tardías, validación del nombre/ID y renderizado seguro. Estas pruebas no confirman compatibilidad con hardware real.
 
-Resultado del 2026-10-09: **11 pruebas superadas** con Node.js 20.18.0. Revisión visual en navegador y conexión con hardware: pendientes; no había navegador conectado disponible en la sesión de desarrollo.
+Resultado del 2026-10-09: **11 pruebas superadas** con Node.js 20.18.0. No había navegador conectado disponible para una revisión visual durante la sesión de desarrollo. La prueba posterior del usuario con hardware se registra a continuación.
 
 ## Comprobación manual en navegador y Android
 
@@ -22,6 +22,16 @@ Resultado del 2026-10-09: **11 pruebas superadas** con Node.js 20.18.0. Revisió
 
 ## Registro de pruebas reales
 
-Estado: **pendiente**. No se han capturado tramas ni confirmado UUID.
+### 2026-10-09 — Conexión desde el móvil
+
+- Fuente: prueba realizada y comunicada por el usuario.
+- Resultado informado: «conecta perfectamente con el patinete»; posteriormente, «probadas varias conexiones y desconexiones con éxito».
+- Alcance validado: conexión inicial y varios ciclos de conexión/desconexión desde el móvil con la unidad del proyecto (NAVEE NT5 Max, según el contexto del proyecto). No se ha indicado el número exacto de ciclos.
+- Teléfono, sistema operativo y navegador/versiones: no comunicados.
+- URL y origen de la prueba: no comunicados; se había previsto usar GitHub Pages.
+- Firmware y verificación de región en esta prueba: no comunicados.
+- Pendiente: comprobar pérdida de alcance, cancelaciones y recuperación ante errores con hardware real. No se ha verificado mediante registros la ausencia de eventos duplicados.
+
+No se han capturado tramas ni confirmado UUID. Esta prueba no confirma el acceso a datos de telemetría ni la compatibilidad con otras unidades.
 
 Al realizar una prueba, anotar fecha, teléfono, sistema operativo, versión de navegador, origen usado (HTTPS/localhost), modelo, región y firmware si se conocen, pasos y resultado. Marcar como desconocidos los datos no comprobados y omitir identificadores sensibles innecesarios.

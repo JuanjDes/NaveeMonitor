@@ -26,4 +26,4 @@ Estados explícitos: desconectado, seleccionando, conectando, conectado, error y
 
 ### Resultado
 
-Implementación disponible para pruebas. La compatibilidad y la conexión con el NAVEE NT5 Max real siguen pendientes de validación.
+El 2026-10-09, el usuario confirmó una conexión correcta desde el móvil con el patinete del proyecto y, posteriormente, varias conexiones y desconexiones con éxito. Esto valida la conexión inicial y los ciclos de conexión/desconexión en su entorno de prueba; no confirma todavía acceso a servicios, telemetría, recuperación ante errores ni compatibilidad con otros teléfonos o versiones de firmware. Los detalles del entorno no se han comunicado. Véase el registro de `pruebas.md`.
