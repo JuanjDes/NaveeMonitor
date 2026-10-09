@@ -6,9 +6,9 @@ El primer objetivo es **observar, leer, registrar y comprender** la interfaz BLE
 
 ## Estado actual
 
-El proyecto está en su fase inicial de documentación y preparación. Todavía no hay una aplicación ejecutable, conexión BLE implementada ni UUID o estructuras del protocolo confirmados.
+Está implementada la primera etapa de conexión: interfaz móvil, selector Bluetooth, conexión/desconexión GATT, nombre e ID del dispositivo, y gestión de cancelaciones y errores. Las pruebas automatizadas usan dispositivos simulados; la conexión con el patinete real está pendiente de validación.
 
-La primera entrega prevista es un **BLE Explorer**. El dashboard y la interpretación de telemetría se desarrollarán después de obtener y analizar datos reales.
+La siguiente etapa del **BLE Explorer** será enumerar los servicios y características autorizados. Todavía no hay UUID ni estructuras del protocolo confirmados, lecturas, notificaciones o registro de tramas. El dashboard y la interpretación de telemetría se desarrollarán después de obtener y analizar datos reales. La instalación PWA y el uso sin conexión también están pendientes.
 
 ## Primera entrega: BLE Explorer
 
@@ -54,21 +54,69 @@ Si las limitaciones encontradas impiden las funciones necesarias, se evaluará u
 NaveeMonitor/
 ├── AGENTS.md                  # Reglas de trabajo en el repositorio
 ├── CONTEXTO-CODEX-NAVEE.md     # Objetivos, alcance y contexto del proyecto
-└── README.md                  # Presentación y estado del proyecto
+├── README.md                  # Presentación y estado del proyecto
+├── index.html                 # Interfaz de conexión
+├── css/styles.css             # Estilos adaptados a móvil
+├── js/
+│   ├── app.js                 # Coordinación de conexión e interfaz
+│   ├── ble/connection.js      # Ciclo de vida de la conexión BLE
+│   └── ui/connection-view.js   # Presentación y controles
+├── docs/
+│   ├── decisiones.md          # Decisiones de arquitectura
+│   └── pruebas.md             # Validación y pruebas con el patinete
+├── tests/connection.test.js   # Pruebas con BLE simulado
+└── package.json               # Módulos y comando de pruebas; sin dependencias
 ```
 
 La estructura de código se incorporará a medida que sea necesaria, separando interfaz, conexión BLE, registro, protocolo y validación.
 
 ## Desarrollo local
 
-Todavía no hay pasos de instalación o ejecución. Se documentarán junto con la primera versión funcional.
+La aplicación es estática: no necesita instalación de paquetes ni compilación. Desde la carpeta del proyecto, con Python 3 instalado:
+
+```powershell
+python -m http.server 8080 --bind 127.0.0.1
+```
+
+Abrir `http://localhost:8080` en el navegador del ordenador. Mantener la terminal abierta y usar `Ctrl+C` para detener el servidor. Evitar abrir `index.html` directamente como archivo: los módulos JavaScript deben servirse por HTTP/HTTPS.
+
+### Prueba desde Android
+
+Web Bluetooth necesita un contexto seguro y que el selector se abra mediante una acción del usuario. Una URL HTTP con la IP local del ordenador no sustituye a HTTPS.
+
+Para probar sin publicar la aplicación, usar Chrome y reenvío de puertos por USB:
+
+1. Arrancar el servidor local anterior en el ordenador.
+2. Activar la depuración USB en las opciones de desarrollador de Android, conectar el teléfono y autorizar el ordenador de confianza.
+3. En Chrome del ordenador, abrir `chrome://inspect/#devices` y activar **Discover USB devices**.
+4. En **Port forwarding**, añadir el puerto `8080` con destino `localhost:8080` y activar el reenvío.
+5. En Chrome del teléfono, abrir `http://localhost:8080`. El Bluetooth utilizado será el del teléfono.
+6. Activar Bluetooth, encender el patinete y pulsar **Conectar**. Si la app oficial mantiene una conexión, desconectarla antes.
+
+Alternativamente, servir la aplicación desde un alojamiento HTTPS. Este repositorio no despliega la web automáticamente.
+
+Referencias: [Web Bluetooth en Chrome](https://developer.chrome.com/docs/capabilities/bluetooth) y [reenvío de puertos a Android](https://developer.chrome.com/docs/devtools/remote-debugging/local-server).
+
+El selector muestra dispositivos cercanos sin filtrar por nombre: aún no se ha confirmado el nombre anunciado por esta unidad. Seleccionar únicamente el patinete que se desea probar. El ID mostrado es el identificador proporcionado por el navegador, no el número de serie.
+
+### Pruebas automatizadas
+
+Con Node.js 20 o posterior:
+
+```powershell
+npm test
+```
+
+No es necesario ejecutar `npm install`. Las pruebas verifican el flujo de conexión con dobles de BLE y el renderizado de estado; no sustituyen las pruebas de hardware ni una revisión visual en móvil. Consultar [docs/pruebas.md](docs/pruebas.md).
+
+### Reglas de trabajo
 
 Antes de modificar código, revisar:
 
 1. [AGENTS.md](AGENTS.md).
 2. Este README.
 3. [CONTEXTO-CODEX-NAVEE.md](CONTEXTO-CODEX-NAVEE.md).
-4. `docs/decisiones.md`, cuando exista.
+4. [docs/decisiones.md](docs/decisiones.md).
 5. La estructura y el estado actual del repositorio.
 
 Trabajar mediante ramas, con cambios pequeños y verificables. Evitar dependencias innecesarias y refactorizaciones ajenas a la tarea.

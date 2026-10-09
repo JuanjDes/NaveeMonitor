@@ -1,0 +1,64 @@
+:root {
+  color-scheme: light;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  color: #182d27;
+  background: #f3f5f0;
+  font-synthesis: none;
+  line-height: 1.6;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+.site-header, main, footer { width: min(100% - 48px, 900px); margin-inline: auto; }
+.site-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 26px; border-bottom: 1px solid #d7dfd5; }
+.brand { color: inherit; text-decoration: none; font-size: 21px; font-weight: 800; letter-spacing: -.8px; }
+.brand span { margin-left: 5px; font-size: 12px; letter-spacing: 2px; font-weight: 500; }
+.version, .eyebrow { font-family: ui-monospace, monospace; font-size: 12px; letter-spacing: 1px; }
+.version { color: #53665c; }
+.intro { padding-block: 48px 30px; }
+.eyebrow { margin: 0 0 12px; text-transform: uppercase; color: #476351; }
+h1 { font-size: clamp(32px, 5.5vw, 52px); line-height: 1.13; letter-spacing: -1.8px; margin: 0; font-weight: 650; }
+h1 span { color: #607268; }
+.intro-copy { max-width: 540px; color: #53665c; margin: 20px 0 0; }
+.connection-card { background: #fff; border: 1px solid #d7dfd5; border-radius: 20px; padding: 30px; box-shadow: 0 8px 30px #12292306; }
+.card-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.card-heading .eyebrow { margin-bottom: 4px; }
+h2 { margin: 0; font-size: 21px; line-height: 1.4; }
+.status { border-radius: 30px; padding: 6px 12px; font-size: 13px; background: #eef1ed; color: #526257; }
+.status::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; margin-right: 8px; }
+.status[data-state="CONNECTED"] { background: #e1f4d0; color: #30541a; }
+.status[data-state="CONNECTING"], .status[data-state="SELECTING"] { background: #fff1d4; color: #755009; }
+.status[data-state="ERROR"], .status[data-state="UNAVAILABLE"] { background: #fae9e5; color: #983d2b; }
+.message { margin: 22px 0; color: #53665c; min-height: 3.2em; }
+.actions { display: flex; gap: 12px; flex-wrap: wrap; }
+button { min-height: 48px; padding: 11px 24px; font: inherit; font-weight: 600; border-radius: 10px; cursor: pointer; border: 1px solid transparent; }
+.primary { background: #c2ef8d; color: #203c16; }
+.primary:hover:enabled { background: #b1e177; }
+.secondary { background: #fff; color: #254534; border-color: #b8c7b9; }
+.secondary:hover:enabled { background: #f3f5f0; }
+button:disabled { cursor: not-allowed; background: #eff1ed; color: #778277; border-color: #e0e5dc; }
+:focus-visible { outline: 3px solid #497c28; outline-offset: 4px; }
+.device-details { margin: 26px 0 12px; border-top: 1px solid #e5e9e1; }
+.device-details > div { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 12px; padding-top: 16px; }
+dt { color: #607268; font-size: 14px; }
+dd { margin: 0; overflow-wrap: anywhere; font-family: ui-monospace, monospace; font-size: 14px; }
+.footnote { margin: 16px 0 0; color: #607268; font-size: 12px; max-width: 640px; }
+.guide { padding-top: 32px; }
+.guide h2 { font-size: 18px; }
+.guide ol { padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 22px 0; }
+.guide li > span { font-family: ui-monospace, monospace; color: #658153; font-size: 12px; }
+h3 { margin: 8px 0 4px; font-size: 15px; }
+.guide p { font-size: 14px; color: #53665c; margin: 0; }
+.scope { border-left: 3px solid #adc990; padding: 12px 18px; margin-top: 30px; font-size: 14px; color: #53665c; }
+footer { display: flex; flex-wrap: wrap; gap: 10px; padding-block: 30px; color: #607268; font-size: 12px; }
+@media (max-width: 600px) {
+  .site-header, main, footer { width: calc(100% - 32px); }
+  .version { font-size: 10px; letter-spacing: 0; }
+  .intro { padding-top: 32px; }
+  .connection-card { padding: 22px; }
+  .actions button { flex: 1; padding-inline: 14px; }
+  .device-details > div { grid-template-columns: minmax(0, 1fr); gap: 3px; }
+  .guide ol { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .guide li { display: flex; gap: 16px; }
+  .guide li > span { padding-top: 3px; }
+  h3 { margin-top: 0; }
+}
