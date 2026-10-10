@@ -1,5 +1,33 @@
 # Decisiones de arquitectura
 
+## 2026-10-11 — Exploración GATT y lecturas manuales
+
+### Decisión
+
+Añadir `js/ble/services.js` para validar y normalizar UUID, `js/ble/gatt.js` para descubrir y leer atributos, `js/ui/gatt-view.js` para su interfaz, y utilidades de conversión y exportación. Mantener la conexión existente y pasarle los UUID validados mediante `optionalServices`. No añadir dependencias.
+
+### Permisos y alcance
+
+Solicitar inicialmente los servicios estándar `180A` y `180F`, cuya presencia en el patinete no está confirmada. Permitir editar la lista antes de conectar. El descubrimiento enumera servicios primarios accesibles mediante `getPrimaryServices()` y sus características; no obtiene necesariamente toda la tabla GATT. Los permisos que el navegador conserve de otras conexiones pueden ampliar el conjunto visible.
+
+No deducir la ausencia de un servicio a partir de un resultado vacío ni identificar campos NAVEE por su posición. Los UUID propietarios deberán obtenerse de observaciones reales. No se realiza barrido de UUID ni autenticación improvisada.
+
+### Lecturas y recuperación
+
+Las lecturas requieren pulsar Leer y una propiedad `read` válida. Mostrar datos crudos con timestamp, sin interpretar el protocolo. Ejecutar una sola operación GATT a la vez. Al desconectar, invalidar las referencias a características y descartar resultados pendientes mediante una generación de sesión. Conservar un informe marcado como anterior hasta conectar de nuevo.
+
+Limitar la entrada a 32 UUID y 2048 caracteres, la exploración a 32 servicios y 64 características por servicio, y cada valor a 512 bytes. Marcar informes parciales cuando un servicio falla o se alcanza un límite. No utilizar UUID como identificadores únicos de instancia: pueden repetirse.
+
+### Exportación y privacidad
+
+Copiar o descargar JSON solo por acción del usuario. No guardar datos de forma persistente ni enviarlos a servidores. Omitir nombre e ID del navegador; avisar de que las lecturas pueden contener identificadores. El informe guarda la última lectura de cada característica, no un historial de tramas. Notificaciones y logger continuo quedan para la siguiente entrega.
+
+### Validación y referencias
+
+Pruebas con BLE simulado para permisos, descubrimiento parcial, duplicados, conversión de buffers, fallos, concurrencia y desconexiones. Añadir una prueba de integración con DOM simulado para comprobar el flujo de botones y exportación. La revisión visual y las pruebas GATT con el patinete real quedan pendientes.
+
+Referencias: [Web Bluetooth en Chrome](https://developer.chrome.com/docs/capabilities/bluetooth) y [UUID asignados por Bluetooth SIG](https://www.bluetooth.com/wp-content/uploads/Files/Specification/HTML/Assigned_Numbers/out/en/index-en.html).
+
 ## 2026-10-09 — Primera entrega de conexión
 
 ### Decisión

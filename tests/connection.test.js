@@ -170,3 +170,26 @@ test("view treats device HTML as text and enables controls for each state", () =
     assert.equal(elements.get("#disconnect").disabled, ![STATES.CONNECTED, STATES.CONNECTING].includes(state));
   }
 });
+
+test("service permissions reach the chooser and server is only exposed while connected", async () => {
+  let options;
+  const device = new FakeDevice();
+  const connection = setup(async (value) => { options = value; return device; });
+  assert.equal(connection.server, null);
+  await connection.connect(["180F", "0x180f"]);
+  assert.deepEqual(options.optionalServices, ["0000180f-0000-1000-8000-00805f9b34fb"]);
+  assert.equal(connection.server, device.gatt);
+  const snapshot = connection.snapshot;
+  snapshot.requestedServiceUuids.length = 0;
+  assert.equal(connection.snapshot.requestedServiceUuids.length, 1);
+  connection.disconnect();
+  assert.equal(connection.server, null);
+});
+
+test("invalid UUIDs never open the chooser", async () => {
+  let calls = 0;
+  const connection = setup(async () => { calls++; return new FakeDevice(); });
+  await connection.connect(["not-a-uuid"]);
+  assert.equal(calls, 0);
+  assert.equal(connection.snapshot.state, STATES.ERROR);
+});

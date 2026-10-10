@@ -8,7 +8,9 @@ El primer objetivo es **observar, leer, registrar y comprender** la interfaz BLE
 
 Está implementada la primera etapa de conexión: interfaz móvil, selector Bluetooth, conexión/desconexión GATT, nombre e ID del dispositivo, y gestión de cancelaciones y errores. Las pruebas automatizadas usan dispositivos simulados. El 2026-10-09, el usuario confirmó varias conexiones y desconexiones correctas con su patinete desde el móvil. Las pruebas reales de pérdida de alcance, cancelaciones y recuperación ante errores siguen pendientes de confirmación.
 
-La siguiente etapa del **BLE Explorer** será enumerar los servicios y características autorizados. Todavía no hay UUID ni estructuras del protocolo confirmados, lecturas, notificaciones o registro de tramas. El dashboard y la interpretación de telemetría se desarrollarán después de obtener y analizar datos reales. La instalación PWA y el uso sin conexión también están pendientes.
+La segunda etapa del **BLE Explorer** permite configurar UUID de servicios antes de conectar, enumerar servicios primarios y características accesibles, mostrar propiedades, realizar lecturas manuales en HEX/decimal/ASCII y copiar o exportar un informe JSON. Esta etapa está pendiente de prueba con el patinete real; todavía no hay UUID NAVEE ni estructuras del protocolo confirmados.
+
+Las notificaciones, el registro continuo, el dashboard, la interpretación de telemetría, la instalación PWA y el uso sin conexión están pendientes.
 
 ## Primera entrega: BLE Explorer
 
@@ -55,16 +57,25 @@ NaveeMonitor/
 ├── AGENTS.md                  # Reglas de trabajo en el repositorio
 ├── CONTEXTO-CODEX-NAVEE.md     # Objetivos, alcance y contexto del proyecto
 ├── README.md                  # Presentación y estado del proyecto
-├── index.html                 # Interfaz de conexión
+├── index.html                 # Interfaz de conexión y exploración
 ├── css/styles.css             # Estilos adaptados a móvil
 ├── js/
-│   ├── app.js                 # Coordinación de conexión e interfaz
-│   ├── ble/connection.js      # Ciclo de vida de la conexión BLE
-│   └── ui/connection-view.js   # Presentación y controles
+│   ├── app.js                 # Coordinación de conexión, exploración e interfaz
+│   ├── ble/
+│   │   ├── connection.js      # Ciclo de vida de la conexión BLE
+│   │   ├── services.js        # Validación de UUID y configuración inicial
+│   │   └── gatt.js            # Descubrimiento, lecturas e informe
+│   ├── ui/
+│   │   ├── connection-view.js # Presentación de conexión
+│   │   └── gatt-view.js       # Configuración y árbol GATT
+│   └── utils/
+│       ├── hex.js             # Conversión segura de bytes
+│       └── report.js          # Descarga local del informe
 ├── docs/
 │   ├── decisiones.md          # Decisiones de arquitectura
-│   └── pruebas.md             # Validación y pruebas con el patinete
-├── tests/connection.test.js   # Pruebas con BLE simulado
+│   ├── pruebas.md             # Validación y pruebas con el patinete
+│   └── servicios-gatt.md      # UUID y limitaciones del descubrimiento
+├── tests/                    # Conexión, GATT e integración con dobles de DOM/BLE
 └── package.json               # Módulos y comando de pruebas; sin dependencias
 ```
 
@@ -98,6 +109,22 @@ Alternativamente, servir la aplicación desde un alojamiento HTTPS. Este reposit
 Referencias: [Web Bluetooth en Chrome](https://developer.chrome.com/docs/capabilities/bluetooth) y [reenvío de puertos a Android](https://developer.chrome.com/docs/devtools/remote-debugging/local-server).
 
 El selector muestra dispositivos cercanos sin filtrar por nombre: aún no se ha confirmado el nombre anunciado por esta unidad. Seleccionar únicamente el patinete que se desea probar. El ID mostrado es el identificador proporcionado por el navegador, no el número de serie.
+
+### Explorar y leer datos
+
+1. Antes de conectar, revisar **UUID de servicios a autorizar**. Se proponen `180A` (información del dispositivo) y `180F` (batería): son identificadores estándar, no servicios confirmados en el NAVEE.
+2. Si se conocen otros UUID de servicio obtenidos del patinete, añadirlos separados por espacios, comas o saltos de línea. Se aceptan UUID completos y formas hexadecimales de 4 u 8 dígitos, con o sin `0x`; máximo 32 entradas y 2048 caracteres. Dejar la lista vacía permite conectar sin solicitar servicios adicionales.
+3. Pulsar **Conectar**, elegir el patinete y después **Explorar servicios**. El descubrimiento no realiza lecturas de valores automáticamente.
+4. Pulsar **Leer** en una característica con `read: sí`. Se mostrará su última lectura con fecha/hora en UTC y bytes HEX, decimal y ASCII imprimible (los demás bytes se representan con puntos).
+5. Usar **Exportar informe** o **Copiar informe** para guardar los resultados, incluso si la exploración falla. El JSON incluye servicios, propiedades, errores y la última lectura por característica; no es un registro continuo.
+
+Web Bluetooth solo permite acceder a servicios autorizados y no bloqueados por el navegador. Si no aparecen servicios, habrá que obtener los UUID reales con una herramienta de diagnóstico BLE, añadirlos y volver a seleccionar el patinete. No se realiza un barrido de UUID ni se inventan identificadores NAVEE. Los permisos concedidos anteriormente al mismo origen pueden seguir vigentes; la lista indica los UUID solicitados en este intento, no todo el historial de permisos.
+
+Al desconectar, los resultados se conservan en memoria y se marcan como anteriores. Al establecer una nueva conexión o iniciar otra exploración se reemplazan; al recargar la página se pierden. Exportar antes de realizar esas acciones si se quieren conservar. El informe omite el nombre e ID del navegador, pero los bytes leídos podrían contener identificadores: revisar el contenido antes de compartirlo.
+
+La exploración está limitada a 32 servicios y 64 características por servicio; si se supera un límite, el informe se marca como parcial. Cada lectura admite hasta 512 bytes. Las operaciones son secuenciales y se pueden interrumpir desconectando. No se invocan escrituras ni suscripciones a notificaciones en esta etapa.
+
+Consultar [docs/servicios-gatt.md](docs/servicios-gatt.md) para distinguir identificadores estándar y observaciones del patinete.
 
 ### Pruebas automatizadas
 

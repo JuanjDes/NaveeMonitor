@@ -12,12 +12,12 @@
   <body>
     <header class="site-header">
       <a class="brand" href="./" aria-label="NAVEE Monitor, inicio">NAVEE <span>MONITOR</span></a>
-      <span class="version">Desarrollo · 01</span>
+      <span class="version">Desarrollo · 02</span>
     </header>
     <main>
       <section class="intro" aria-labelledby="page-title">
         <p class="eyebrow">Diagnóstico Bluetooth</p>
-        <h1 id="page-title">Conoce tu patinete.<br><span>Empieza por conectar.</span></h1>
+        <h1 id="page-title">Conoce tu patinete.<br><span>Explora su conexión.</span></h1>
         <p class="intro-copy">Un espacio para explorar los datos de tu NAVEE NT5 Max, paso a paso y desde tu móvil.</p>
       </section>
 
@@ -27,6 +27,13 @@
           <span id="connection-state" class="status" data-state="DISCONNECTED">Desconectado</span>
         </div>
         <p id="connection-message" class="message" role="status" aria-live="polite" aria-atomic="true">Comprobando compatibilidad del navegador…</p>
+        <div class="service-config">
+          <label for="service-uuids">UUID de servicios a autorizar</label>
+          <p id="service-help" class="footnote">Comprobación inicial: 180A (información del dispositivo) y 180F (batería). Son servicios estándar; su presencia en tu NAVEE no está confirmada. Puedes añadir UUID obtenidos del patinete, separados por espacios, comas o saltos de línea. Máximo 32.</p>
+          <textarea id="service-uuids" rows="3" maxlength="2048" spellcheck="false" autocapitalize="off" aria-describedby="service-help service-error" disabled></textarea>
+          <p id="service-error" class="field-error" role="alert"></p>
+          <p class="footnote">Configura la lista antes de conectar. Para cambiar permisos, desconecta, modifica la lista y vuelve a elegir el dispositivo.</p>
+        </div>
         <div class="actions">
           <button id="connect" class="primary" type="button" disabled>Conectar</button>
           <button id="disconnect" class="secondary" type="button" disabled>Desconectar</button>
@@ -38,6 +45,29 @@
         <p class="footnote">El nombre no confirma el modelo. El ID lo proporciona el navegador; no es el número de serie del patinete.</p>
       </section>
 
+      <section class="connection-card explorer" aria-labelledby="gatt-title">
+        <div class="card-heading">
+          <div><p class="eyebrow">Servicios y características</p><h2 id="gatt-title">Explorador GATT</h2></div>
+          <span class="status">Solo lectura</span>
+        </div>
+        <p class="footnote">El navegador solo muestra servicios autorizados y accesibles. Un resultado vacío no significa que el patinete no tenga datos.</p>
+        <p id="gatt-message" class="message" role="status" aria-live="polite" aria-atomic="true">Conecta el patinete para explorar.</p>
+        <div class="actions">
+          <button id="discover" class="primary" type="button" disabled>Explorar servicios</button>
+          <button id="export-report" class="secondary" type="button" disabled>Exportar informe</button>
+          <button id="copy-report" class="secondary" type="button" disabled>Copiar informe</button>
+        </div>
+        <p id="report-message" class="footnote" role="status" aria-live="polite"></p>
+        <p id="stale-report" class="scope" hidden>Datos de una conexión anterior. Puedes exportarlos; al conectar de nuevo se reemplazarán.</p>
+        <div id="gatt-services" aria-busy="false"></div>
+        <details class="gatt-help">
+          <summary>Si no aparecen servicios</summary>
+          <p>Necesitamos los UUID reales de los servicios del patinete. Puedes obtenerlos con una herramienta de diagnóstico BLE que muestre su tabla GATT, sin enviar comandos ni cambiar parámetros. Añádelos a la lista superior y vuelve a conectar.</p>
+          <p>Esta etapa muestra propiedades y permite lecturas manuales. Las notificaciones y el registro continuo se añadirán después.</p>
+        </details>
+        <p class="footnote">El informe incluye UUID, errores y la última lectura por característica. Los valores podrían contener identificadores del patinete: revísalos antes de compartir el archivo.</p>
+      </section>
+
       <section class="guide" aria-labelledby="guide-title">
         <h2 id="guide-title">Antes de conectar</h2>
         <ol>
@@ -46,7 +76,7 @@
           <li><span>03</span><div><h3>Elige tu dispositivo</h3><p>Pulsa Conectar y selecciona tu patinete. El selector puede mostrar otros dispositivos cercanos.</p></div></li>
         </ol>
       </section>
-      <aside class="scope"><strong>Primera etapa: conexión.</strong> La exploración de servicios y el registro de datos llegarán en el siguiente paso. Esta versión no modifica parámetros del patinete.</aside>
+      <aside class="scope"><strong>Segunda etapa: exploración GATT.</strong> Consulta servicios y lee bytes sin interpretar. Esta versión no modifica parámetros del patinete.</aside>
       <noscript><p class="scope">Activa JavaScript para utilizar la conexión Bluetooth.</p></noscript>
     </main>
     <footer>Datos locales <span aria-hidden="true">/</span> Sin telemetría externa <span aria-hidden="true">/</span> NAVEE NT5 Max</footer>

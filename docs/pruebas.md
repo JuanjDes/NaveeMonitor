@@ -20,6 +20,26 @@ Resultado del 2026-10-09: **11 pruebas superadas** con Node.js 20.18.0. No habí
 8. Si una conexión tarda, pulsar Cancelar conexión: no debe aparecer Conectado después de la cancelación.
 9. Apagar el patinete mientras está conectado: debe indicar pérdida de conexión sin reconectar automáticamente.
 
+## Segunda etapa: exploración GATT (2026-10-11)
+
+Las pruebas automatizadas añaden validación de UUID, descubrimiento secuencial y parcial, UUID duplicados, permisos denegados, lecturas manuales, límites de tamaño, respeto al offset de DataView, desconexiones con operaciones pendientes, aislamiento de informes y flujo completo de la aplicación con DOM/BLE simulados.
+
+Resultado del 2026-10-11: **28 pruebas superadas** mediante `npm test`, incluidas las pruebas de conexión existentes. El runner se ejecutó fuera del entorno restringido porque este bloqueaba la creación de procesos con `EPERM`.
+
+La revisión visual está pendiente: no hay navegador conectado disponible en esta sesión. Las siguientes pruebas con el patinete también están pendientes:
+
+1. Comprobar en móvil que aparecen la configuración de UUID y el Explorador GATT.
+2. Introducir un UUID inválido y pulsar Conectar: debe indicar el error sin abrir el selector.
+3. Conectar con la lista inicial `180A`, `180F` y pulsar Explorar servicios. Registrar resultados o mensaje de error, sin asumir que estos servicios están presentes.
+4. Si no hay servicios accesibles, obtener UUID reales mediante una herramienta de diagnóstico BLE y reintentar tras añadirlos y volver a conectar.
+5. Comprobar UUID y propiedades. Una característica sin `read` debe tener el botón Leer deshabilitado, aunque admita escritura o notificaciones.
+6. Leer manualmente una característica compatible y comprobar timestamp y formatos HEX/decimal/ASCII. No atribuir significado NAVEE a bytes sin evidencia.
+7. Copiar y exportar el informe JSON. Comprobar que el archivo refleja los datos visibles, incluso ante errores.
+8. Desconectar durante descubrimiento o lectura: no deben aparecer datos tardíos como actuales. Los resultados anteriores deben seguir exportables y las lecturas deshabilitadas.
+9. Conectar de nuevo y volver a explorar: debe obtener referencias nuevas y no conservar valores de la sesión anterior como actuales.
+
+Solo se guarda en memoria la última lectura por característica. Exportar antes de recargar, conectar de nuevo o repetir la exploración.
+
 ## Registro de pruebas reales
 
 ### 2026-10-09 — Conexión desde el móvil

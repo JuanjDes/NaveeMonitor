@@ -1,3 +1,5 @@
+import { validateServiceUuids } from "./services.js";
+
 export const STATES = Object.freeze({
   DISCONNECTED: "DISCONNECTED",
   SELECTING: "SELECTING",
@@ -35,7 +37,7 @@ export function getCompatibility(bluetooth, secureContext) {
   return null;
 }
 
-// No DOM, persistence, service requests or writes in this first connection layer.
+// Connection lifecycle only; service discovery belongs to GattExplorer.
 export class BleConnection extends EventTarget {
   #bluetooth;
   #session = null;
@@ -50,10 +52,16 @@ export class BleConnection extends EventTarget {
       message: unavailable ?? "Todo listo. Pulsa Conectar y selecciona tu patinete.",
       name: "Sin seleccionar",
       id: "No disponible",
+      requestedServiceUuids: [],
     };
   }
 
-  get snapshot() { return { ...this.#snapshot }; }
+  get snapshot() { return { ...this.#snapshot, requestedServiceUuids: [...this.#snapshot.requestedServiceUuids] }; }
+
+  get server() {
+    return this.#snapshot.state === STATES.CONNECTED && this.#session?.device.gatt.connected
+      ? this.#session.device.gatt : null;
+  }
 
   #update(state, message, details = {}) {
     this.#snapshot = { ...this.#snapshot, ...details, state, message };
@@ -67,17 +75,26 @@ export class BleConnection extends EventTarget {
     if (this.#session === session) this.#session = null;
   }
 
-  async connect() {
+  async connect(optionalServices = []) {
     if (![STATES.DISCONNECTED, STATES.ERROR].includes(this.#snapshot.state)) return;
+    let requestedServiceUuids;
+    try {
+      requestedServiceUuids = validateServiceUuids(optionalServices);
+    } catch {
+      this.#update(STATES.ERROR, "La lista de servicios no es válida. Revisa los UUID antes de conectar.");
+      return;
+    }
     const session = { device: null, onDisconnect: null };
     this.#session = session;
     this.#update(STATES.SELECTING, "Selecciona tu patinete en el selector del navegador. Puedes cancelar desde ese selector.", {
-      name: "Sin seleccionar", id: "No disponible",
+      name: "Sin seleccionar", id: "No disponible", requestedServiceUuids,
     });
     try {
       // Keep requestDevice before the first await to preserve the click's user activation.
       // The advertised name and proprietary service UUIDs are not yet known.
-      const device = await this.#bluetooth.requestDevice({ acceptAllDevices: true });
+      const options = { acceptAllDevices: true };
+      if (requestedServiceUuids.length) options.optionalServices = requestedServiceUuids;
+      const device = await this.#bluetooth.requestDevice(options);
       if (this.#session !== session) return;
       if (!device?.gatt || typeof device.gatt.connect !== "function") {
         throw new DOMException("GATT unavailable", "NotSupportedError");
@@ -101,7 +118,7 @@ export class BleConnection extends EventTarget {
         return;
       }
       if (!device.gatt.connected) throw new DOMException("Disconnected", "NetworkError");
-      this.#update(STATES.CONNECTED, "Conexión Bluetooth establecida. La lectura de servicios se añadirá en la siguiente etapa.");
+      this.#update(STATES.CONNECTED, "Conexión Bluetooth establecida. Ya puedes explorar los servicios autorizados.");
     } catch (error) {
       if (this.#session !== session) return;
       const cancelled = this.#snapshot.state === STATES.SELECTING && error?.name === "NotFoundError";
