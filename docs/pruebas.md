@@ -26,7 +26,7 @@ Las pruebas automatizadas añaden validación de UUID, descubrimiento secuencial
 
 Resultado del 2026-10-11: **28 pruebas superadas** mediante `npm test`, incluidas las pruebas de conexión existentes. El runner se ejecutó fuera del entorno restringido porque este bloqueaba la creación de procesos con `EPERM`.
 
-La revisión visual está pendiente: no hay navegador conectado disponible en esta sesión. Las siguientes pruebas con el patinete también están pendientes:
+La revisión visual está pendiente: no hay navegador conectado disponible en esta sesión. El primer intento real de descubrimiento se registra más abajo; el resto de comprobaciones de esta lista sigue pendiente salvo evidencia indicada en ese registro:
 
 1. Comprobar en móvil que aparecen la configuración de UUID y el Explorador GATT.
 2. Introducir un UUID inválido y pulsar Conectar: debe indicar el error sin abrir el selector.
@@ -41,6 +41,17 @@ La revisión visual está pendiente: no hay navegador conectado disponible en es
 Solo se guarda en memoria la última lectura por característica. Exportar antes de recargar, conectar de nuevo o repetir la exploración.
 
 ## Registro de pruebas reales
+
+### 2026-10-11 — Descubrimiento sin servicios accesibles
+
+- Fuente: informe `navee-gatt-report.json` facilitado por el usuario; no se incorpora el archivo original al repositorio.
+- Exportación: `2026-10-10T23:11:30.664Z` (11 de octubre, 01:11:30 en Europe/Madrid).
+- Estado: `connected: true`, `attempted: true`, `busy: false`, `stale: false`.
+- Servicios solicitados: `0000180a-0000-1000-8000-00805f9b34fb` y `0000180f-0000-1000-8000-00805f9b34fb`.
+- Resultado: `services: []`, `discoveredAt: null`, `incomplete: true`; mensaje «No se encontraron atributos accesibles. No permite concluir que el patinete carezca de ellos».
+- Interpretación: el mensaje corresponde a `NotFoundError` en la implementación actual. El JSON no conserva el nombre ni el mensaje original de la excepción. No se completó el descubrimiento ni se obtuvieron lecturas.
+- No confirma ausencia de servicios GATT ni necesidad de autenticación. No permite determinar los UUID propietarios del patinete.
+- Siguiente paso: obtener la lista de servicios con una herramienta nativa de diagnóstico BLE, añadir los UUID observados a la configuración y volver a conectar y explorar. Usar solo descubrimiento, sin escrituras.
 
 ### 2026-10-09 — Conexión desde el móvil
 

@@ -13,6 +13,8 @@ A fecha de 2026-10-11, la conexión y desconexión del patinete están probadas 
 
 Fuente de los nombres y asignaciones: [Bluetooth SIG, Assigned Numbers](https://www.bluetooth.com/wp-content/uploads/Files/Specification/HTML/Assigned_Numbers/out/en/index-en.html). No son UUID propietarios descubiertos ni una garantía de compatibilidad.
 
+Primera prueba real, 2026-10-11: con ambos UUID solicitados, el informe del usuario muestra conexión activa pero ningún servicio accesible y un descubrimiento fallido. Su presencia sigue sin confirmarse; este resultado no demuestra que el patinete carezca de otros servicios. Véase `pruebas.md`.
+
 ## Limitaciones de Web Bluetooth
 
 El navegador requiere declarar servicios en filtros o `optionalServices` al solicitar el dispositivo. La aplicación enumera únicamente servicios primarios accesibles, sujetos a permisos y bloqueos del navegador. Puede haber permisos conservados de sesiones anteriores. Una lista vacía no demuestra que el patinete carezca de datos; una conexión GATT correcta tampoco demuestra que exista acceso a telemetría.
