@@ -42,6 +42,15 @@ Solo se guarda en memoria la última lectura por característica. Exportar antes
 
 ## Registro de pruebas reales
 
+### 2026-10-18 — Capturas de descubrimiento en nRF Connect
+
+- Fuente: once capturas del usuario, aproximadamente de 11:00 a 11:04 según sus nombres y pantalla.
+- Diez capturas muestran CLIENT y conexión con un dispositivo llamado NAVEE, en estado BONDED. Se observan siete UUID de servicio distintos; el detalle de características se documenta en `servicios-gatt.md`.
+- Hallazgos para la próxima prueba: servicio desconocido `0000d0ff-3c17-d293-8e48-14fe2e4da212` con `B001` READ, `B002` WRITE/WRITE NO RESPONSE y `B003` NOTIFY; servicio de información del accesorio `87290102-3c51-43b1-a1a9-11b9dc38478b` con características READ; servicio `1804` con `2A07` READ.
+- La última captura, `110426`, muestra SERVER con Bluetooth desactivado y estado DISCONNECTED: sus servicios locales no se añaden al mapa remoto.
+- No hay lecturas de los payloads de los servicios candidatos ni confirmación de batería, firmware del controlador o telemetría. No se ha probado todavía su acceso desde NAVEE Monitor.
+- Próximo paso: configurar los tres servicios propuestos en `servicios-gatt.md`, volver a conectar desde NAVEE Monitor, explorar, realizar lecturas manuales y exportar JSON. Las capturas no se copian al repositorio para evitar almacenar la dirección Bluetooth.
+
 ### 2026-10-11 — Descubrimiento sin servicios accesibles
 
 - Fuente: informe `navee-gatt-report.json` facilitado por el usuario; no se incorpora el archivo original al repositorio.

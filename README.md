@@ -8,7 +8,7 @@ El primer objetivo es **observar, leer, registrar y comprender** la interfaz BLE
 
 Está implementada la primera etapa de conexión: interfaz móvil, selector Bluetooth, conexión/desconexión GATT, nombre e ID del dispositivo, y gestión de cancelaciones y errores. Las pruebas automatizadas usan dispositivos simulados. El 2026-10-09, el usuario confirmó varias conexiones y desconexiones correctas con su patinete desde el móvil. Las pruebas reales de pérdida de alcance, cancelaciones y recuperación ante errores siguen pendientes de confirmación.
 
-La segunda etapa del **BLE Explorer** permite configurar UUID de servicios antes de conectar, enumerar servicios primarios y características accesibles, mostrar propiedades, realizar lecturas manuales en HEX/decimal/ASCII y copiar o exportar un informe JSON. Esta etapa está pendiente de prueba con el patinete real; todavía no hay UUID NAVEE ni estructuras del protocolo confirmados.
+La segunda etapa del **BLE Explorer** permite configurar UUID de servicios antes de conectar, enumerar servicios primarios y características accesibles, mostrar propiedades, realizar lecturas manuales en HEX/decimal/ASCII y copiar o exportar un informe JSON. La primera prueba con `180A` y `180F` no encontró servicios accesibles. El 2026-10-18 se obtuvieron UUID y propiedades mediante capturas de nRF Connect; falta probar esos servicios desde NAVEE Monitor y conocer el significado de sus datos. La lista para la próxima prueba está en [docs/servicios-gatt.md](docs/servicios-gatt.md#próxima-prueba-con-la-app-existente).
 
 Las notificaciones, el registro continuo, el dashboard, la interpretación de telemetría, la instalación PWA y el uso sin conexión están pendientes.
 
