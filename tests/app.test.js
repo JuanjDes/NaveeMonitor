@@ -67,7 +67,20 @@ test("application wiring: configure, connect, discover, read, copy/export, disco
         readValue: async () => new DataView(bytes.buffer),
         writeValue() { assert.fail("Unexpected write"); },
         startNotifications() { assert.fail("Unexpected subscription"); },
-      }] }];
+      }] }, {
+        uuid: "0000d0ff-3c17-d293-8e48-14fe2e4da212", isPrimary: true,
+        getCharacteristics: async () => [
+          { uuid: "b001", properties: { read: true }, readValue: async () => { throw new DOMException("Private details", "NotSupportedError"); } },
+          { uuid: "b002", properties: { write: true, writeWithoutResponse: true } },
+          { uuid: "b003", properties: { notify: true } },
+        ],
+      }, {
+        uuid: "87290102-3c51-43b1-a1a9-11b9dc38478b", isPrimary: true,
+        getCharacteristics: async () => [{
+          uuid: "6aa50003-6352-4d57-a7b4-003a416fbb0b", properties: { read: true },
+          readValue: async () => new DataView(bytes.buffer),
+        }],
+      }];
     },
   };
   const globals = {
@@ -110,10 +123,24 @@ test("application wiring: configure, connect, discover, read, copy/export, disco
   assert.ok(readButton);
   await readButton.click();
   assert.ok(walk(get("gatt-services")).some((node) => node.tag === "pre" && node.textContent.includes(rawText)));
+  const findRead = (key) => walk(get("gatt-services")).find((node) => node.dataset.readKey === key);
+  assert.equal(findRead("s1/c0").textContent, "Leer B001");
+  assert.equal(findRead("s1/c1").disabled, true);
+  assert.equal(findRead("s1/c2").disabled, true);
+  await findRead("s1/c0").click();
+  assert.equal(findRead("s1/c0").disabled, false, "Failed reads can be retried");
+  assert.ok(walk(get("gatt-services")).some((node) => node.textContent.startsWith("NotSupportedError:")));
+  assert.equal(findRead("s2/c0").textContent, "Leer Modelo del accesorio");
+  assert.equal(findRead("s2/c0").disabled, false, "B001 failure must not block accessory reads");
+  await findRead("s2/c0").click();
   await get("copy-report").click();
   const report = JSON.parse(copied);
   assert.equal(report.services[0].characteristics[0].value.ascii, rawText);
   assert.equal(report.services[0].characteristics[0].properties.notify, true);
+  assert.equal(report.services[1].characteristics[0].errorName, "NotSupportedError");
+  assert.ok(report.services[1].characteristics[0].lastReadAttemptAt);
+  assert.equal(report.services[2].characteristics[0].value.ascii, rawText);
+  assert.doesNotMatch(copied, /Private details/);
   await get("export-report").click();
   assert.equal(JSON.parse(await downloadBlob.text()).format, "navee-monitor-gatt");
 

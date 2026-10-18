@@ -2,7 +2,7 @@
 
 ## Estado de conocimiento
 
-A fecha de 2026-10-18, la conexión y desconexión del patinete están probadas por el usuario. Las capturas de nRF Connect aportan **UUID y propiedades observados en una sesión real**, pendientes de reproducir desde NAVEE Monitor. No hay campos de telemetría ni comandos del protocolo confirmados. Las lecturas simuladas de los tests no constituyen evidencia del protocolo real.
+A fecha de 2026-10-18, la conexión y desconexión del patinete están probadas por el usuario. Las capturas de nRF Connect aportan **UUID y propiedades observados en una sesión real**. Un informe posterior de NAVEE Monitor reproduce el descubrimiento de los servicios D0FF, información del accesorio y 1804, con 13 características. No hay payloads recibidos, campos de telemetría ni comandos del protocolo confirmados. Las lecturas simuladas de los tests no constituyen evidencia del protocolo real.
 
 ## Observación del 2026-10-18 — nRF Connect
 
@@ -76,9 +76,15 @@ Desconectar nRF Connect y la app oficial. En NAVEE Monitor, antes de conectar, s
 1804
 ```
 
-Conectar, explorar y leer las características que admitan READ, empezando por `B001` y la información del accesorio. Exportar el informe incluso si hay errores. No introducir UUID de características como si fueran servicios. Esta prueba ya es posible sin modificar ni publicar de nuevo el código; se aprovecha la configuración editable existente.
+Conectar y explorar. En la versión con etiquetas, buscar **Información del accesorio** y pulsar **Leer Fabricante del accesorio** y **Leer Modelo del accesorio**. Probar también la lectura de `2A07` y reintentar **Leer B001**. Si B001 falla, continuar con las otras lecturas y exportar el informe. No introducir UUID de características como si fueran servicios. Las lecturas ya existían en la versión anterior; las etiquetas y el detalle adicional de errores requieren publicar y recargar la versión actualizada.
 
-Nivel de confianza: UUID y propiedades observados en una sesión; acceso desde Web Bluetooth y significado de los payloads pendientes. BONDED no confirma autenticación de aplicación ni demuestra que el bonding sea imprescindible.
+Nivel de confianza: UUID y propiedades de estos tres servicios observados en nRF Connect y NAVEE Monitor; lectura efectiva y significado de los payloads pendientes. BONDED no confirma autenticación de aplicación ni demuestra que el bonding sea imprescindible.
+
+### Resultado desde NAVEE Monitor — 2026-10-18
+
+El informe `navee-gatt-report (1).json` muestra tres servicios y 13 características: tres en D0FF, una en 1804 y nueve en información del accesorio. Once anuncian `read: true`. Todas tienen `value: null`. B001 contiene el error «Esta operación no está soportada por el dispositivo o el navegador», correspondiente a la traducción de `NotSupportedError` en el código; el archivo no conserva el nombre original de la excepción. No permite identificar la causa concreta del rechazo. Las otras diez características con READ no tienen valores ni errores registrados.
+
+`incomplete: false` indica que el descubrimiento terminó sin errores ni truncamiento registrados; no significa que las lecturas hayan funcionado. El usuario no localizó las opciones de lectura con los títulos genéricos anteriores. Se añaden etiquetas por UUID de servicio y característica, botones identificados y fecha del último intento. Estas mejoras no resuelven por sí mismas el rechazo de B001. Véase el registro en `pruebas.md`.
 
 ## Servicios estándar propuestos para la primera comprobación
 

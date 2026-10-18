@@ -142,6 +142,32 @@ test("malformed packets produce a controlled read error", async () => {
   assert.match(explorer.snapshot.services[0].characteristics[0].error, /tamaño/);
 });
 
+test("read diagnostics distinguish attempts, safe errors and successful retries", async () => {
+  const readable = characteristic("b001");
+  const { explorer } = setup([service([readable], "0000d0ff-3c17-d293-8e48-14fe2e4da212")]);
+  await explorer.discover();
+  const item = () => explorer.createReport().services[0].characteristics[0];
+  assert.equal(item().lastReadAttemptAt, null);
+  const successfulRead = readable.readValue.bind(readable);
+  readable.readValue = async () => { throw new DOMException("private message", "NotSupportedError"); };
+  await explorer.read("s0/c0");
+  assert.equal(item().errorName, "NotSupportedError");
+  assert.ok(Number.isFinite(Date.parse(item().lastReadAttemptAt)));
+  assert.equal(item().value, null);
+  assert.equal(explorer.snapshot.incomplete, false, "Read failure does not change discovery completeness");
+  readable.readValue = async () => { throw { name: "private name", message: "private message" }; };
+  await explorer.read("s0/c0");
+  assert.equal(item().errorName, "UnknownError");
+  assert.doesNotMatch(JSON.stringify(explorer.createReport()), /private/);
+  readable.readValue = successfulRead;
+  await explorer.read("s0/c0");
+  assert.equal(item().errorName, null);
+  assert.equal(item().error, null);
+  assert.equal(item().value.hex, "55 00 FF");
+  await explorer.discover();
+  assert.equal(item().lastReadAttemptAt, null);
+});
+
 test("disconnect during discovery discards late results, including after reconnection", async () => {
   const pending = deferred();
   const { explorer, server } = setup();

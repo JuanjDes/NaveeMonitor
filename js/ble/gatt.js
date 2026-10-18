@@ -7,6 +7,11 @@ export const PROPERTY_NAMES = Object.freeze([
   "broadcast", "authenticatedSignedWrites", "reliableWrite", "writableAuxiliaries",
 ]);
 
+const ERROR_NAMES = new Set([
+  "SecurityError", "NotAllowedError", "NotFoundError", "NetworkError",
+  "NotSupportedError", "TypeError", "RangeError", "InvalidStateError", "AbortError",
+]);
+
 function describeError(error) {
   switch (error?.name) {
     case "SecurityError":
@@ -95,7 +100,8 @@ export class GattExplorer extends EventTarget {
           for (const [index, characteristic] of characteristics.slice(0, GATT_LIMITS.characteristicsPerService).entries()) {
             const key = `${row.key}/c${index}`;
             const properties = Object.fromEntries(PROPERTY_NAMES.map((name) => [name, characteristic.properties?.[name] === true]));
-            const item = { key, uuid: normalizeUuid(characteristic.uuid), properties, value: null, error: null };
+            const item = { key, uuid: normalizeUuid(characteristic.uuid), properties,
+              value: null, error: null, errorName: null, lastReadAttemptAt: null };
             row.characteristics.push(item);
             this.#characteristics.set(key, { characteristic, item });
           }
@@ -128,6 +134,8 @@ export class GattExplorer extends EventTarget {
     }
     const generation = this.#generation;
     entry.item.error = null;
+    entry.item.errorName = null;
+    entry.item.lastReadAttemptAt = new Date().toISOString();
     // Clear a previous value so a failed retry cannot look like a fresh read.
     entry.item.value = null;
     this.#update({ busy: true, message: "Leyendo característica… Si la operación no termina, puedes desconectar." });
@@ -139,6 +147,8 @@ export class GattExplorer extends EventTarget {
     } catch (error) {
       if (!this.#isCurrent(generation)) return;
       entry.item.error = describeError(error);
+      // Keep only known error types, never a raw message or arbitrary device data.
+      entry.item.errorName = ERROR_NAMES.has(error?.name) ? error.name : "UnknownError";
       this.#update({ message: "La lectura ha fallado. Consulta el detalle de la característica." });
     } finally {
       this.#finish(generation);

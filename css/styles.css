@@ -81,3 +81,8 @@ textarea:disabled { background: #f3f5f0; }
   .guide li > span { padding-top: 3px; }
   h3 { margin-top: 0; }
 }
+.gatt-read {
+  width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

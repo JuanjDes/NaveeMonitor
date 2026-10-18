@@ -55,3 +55,9 @@ Estados explícitos: desconectado, seleccionando, conectando, conectado, error y
 ### Resultado
 
 El 2026-10-09, el usuario confirmó una conexión correcta desde el móvil con el patinete del proyecto y, posteriormente, varias conexiones y desconexiones con éxito. Esto valida la conexión inicial y los ciclos de conexión/desconexión en su entorno de prueba; no confirma todavía acceso a servicios, telemetría, recuperación ante errores ni compatibilidad con otros teléfonos o versiones de firmware. Los detalles del entorno no se han comunicado. Véase el registro de `pruebas.md`.
+
+## 2026-10-18 — Identificación y diagnóstico de lecturas
+
+Tras descubrir tres servicios desde NAVEE Monitor, el usuario no localizó las lecturas entre los títulos genéricos. Se muestran nombres basados en las capturas de nRF Connect, asociados al UUID completo del servicio y de la característica, conservando siempre el UUID visible y una alternativa genérica para atributos desconocidos. Los nombres no interpretan los payloads ni confirman telemetría.
+
+Los botones incluyen el nombre de la característica y se sitúan antes de las propiedades. Cada intento manual registra `lastReadAttemptAt`; los fallos de lectura añaden `errorName`, restringido a nombres conocidos o `UnknownError`, sin almacenar mensajes originales. Son campos aditivos del informe versión 1. Se mantienen las lecturas manuales secuenciales; el error de una característica no bloquea las demás. El indicador `incomplete` sigue describiendo únicamente el descubrimiento.

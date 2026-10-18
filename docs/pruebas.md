@@ -42,6 +42,24 @@ Solo se guarda en memoria la última lectura por característica. Exportar antes
 
 ## Registro de pruebas reales
 
+### 2026-10-18 — Descubrimiento desde NAVEE Monitor y lectura fallida de B001
+
+- Fuente: `navee-gatt-report (1).json` facilitado por el usuario; no se incorpora el original al repositorio.
+- Descubrimiento: `2026-10-18T10:46:28.503Z`. Exportación: `2026-10-18T10:49:22.309Z` (12:49:22 en Europe/Madrid).
+- Estado: conectado, exploración intentada, sin operación pendiente ni informe obsoleto; `incomplete: false`.
+- Solicitados y descubiertos: D0FF (`0000d0ff-3c17-d293-8e48-14fe2e4da212`), información del accesorio (`87290102-3c51-43b1-a1a9-11b9dc38478b`) y Tx Power (`1804`). Son 13 características, 11 con READ.
+- B001 anuncia READ pero registra «Esta operación no está soportada por el dispositivo o el navegador». El código traduce así `NotSupportedError`; el informe antiguo no conserva el nombre original ni el momento del intento. No confirma un problema de autenticación, firmware o permisos concreto.
+- Todos los valores son nulos. Las nueve características de información del accesorio y 2A07 no tienen lecturas ni errores registrados. No hay payload ni telemetría confirmada.
+- El usuario informa que no localizó «Leer» para B001 ni para la información del accesorio. Se mejora su identificación con nombres observados, botones por característica antes de las propiedades y detalle del último intento/error.
+- Siguiente prueba: publicar y recargar los cambios, usar la misma lista de UUID, conectar, explorar, leer fabricante/modelo del accesorio y 2A07, reintentar B001 y exportar. Si B001 vuelve a fallar, comparar una lectura manual de esa misma característica en nRF Connect, en una conexión separada.
+- Entorno, firmware y región verificada: no comunicados; unidad del proyecto según el usuario.
+
+### Validación automatizada de las mejoras de lectura
+
+Resultado del 2026-10-18: **29 pruebas superadas** mediante `npm test`.
+
+Los dobles de BLE y DOM comprueban que B001 aparece como «Leer B001», que B002/B003 no permiten lectura directa y que un rechazo de B001 permite reintentar y leer el modelo del accesorio. Se verifica la exportación del tipo de error y la fecha del intento, el borrado del error tras un reintento correcto y la omisión de mensajes arbitrarios. Los datos son simulados: la revisión visual en móvil y las lecturas reales siguen pendientes.
+
 ### 2026-10-18 — Capturas de descubrimiento en nRF Connect
 
 - Fuente: once capturas del usuario, aproximadamente de 11:00 a 11:04 según sus nombres y pantalla.
