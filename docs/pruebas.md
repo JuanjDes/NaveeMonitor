@@ -42,6 +42,16 @@ Solo se guarda en memoria la última lectura por característica. Exportar antes
 
 ## Registro de pruebas reales
 
+### 2026-10-18 — Repetición con diagnóstico de lectura actualizado
+
+- Fuente: `navee-gatt-report (2).json`; se documenta el resultado sin incorporar el archivo original.
+- Descubrimiento: `2026-10-18T11:11:28.078Z`. Exportación: `2026-10-18T11:11:52.019Z` (13:11:52 en Europe/Madrid).
+- Se reproducen los tres servicios y 13 características del informe anterior, con 11 características que anuncian READ. Conexión activa, sin operación pendiente, `stale: false` e `incomplete: false`.
+- B001 registra `lastReadAttemptAt: 2026-10-18T11:11:42.538Z` y `errorName: NotSupportedError`. Esta vez el tipo de error está explícito en el JSON. La causa concreta del rechazo sigue sin determinarse; no se recibió ningún valor.
+- Las nueve características del accesorio y 2A07 tienen `lastReadAttemptAt: null`, sin valor ni error. En la exploración exportada no consta ningún intento de leerlas. Esto no permite concluir que sus lecturas fallen.
+- Los nuevos campos confirman que se utilizó una versión con el diagnóstico actualizado. El informe no verifica por sí solo la presentación visual de los botones.
+- Próximo paso: leer manualmente fabricante y modelo en Información del accesorio y 2A07 en Potencia de transmisión Bluetooth; exportar después sin volver a explorar ni reconectar, porque esas acciones reemplazan los resultados. Comparar B001 con una lectura manual en nRF Connect, en una conexión separada, para acotar el rechazo.
+
 ### 2026-10-18 — Descubrimiento desde NAVEE Monitor y lectura fallida de B001
 
 - Fuente: `navee-gatt-report (1).json` facilitado por el usuario; no se incorpora el original al repositorio.
