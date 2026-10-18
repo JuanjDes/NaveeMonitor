@@ -2,7 +2,7 @@
 
 ## Estado de conocimiento
 
-A fecha de 2026-10-18, la conexión y desconexión del patinete están probadas por el usuario. Las capturas de nRF Connect aportan **UUID y propiedades observados en una sesión real**. Un informe posterior de NAVEE Monitor reproduce el descubrimiento de los servicios D0FF, información del accesorio y 1804, con 13 características. No hay payloads recibidos, campos de telemetría ni comandos del protocolo confirmados. Las lecturas simuladas de los tests no constituyen evidencia del protocolo real.
+A fecha de 2026-10-18, la conexión y desconexión del patinete están probadas por el usuario. Las capturas de nRF Connect aportan **UUID y propiedades observados en una sesión real**. NAVEE Monitor reproduce el descubrimiento de los servicios D0FF, información del accesorio y 1804, con 13 características. El tercer informe registra las primeras lecturas reales: fabricante/modelo del accesorio y potencia de transmisión Bluetooth. No hay campos de telemetría de marcha ni comandos del protocolo confirmados. Las lecturas simuladas de los tests no constituyen evidencia del protocolo real.
 
 ## Observación del 2026-10-18 — nRF Connect
 
@@ -78,13 +78,35 @@ Desconectar nRF Connect y la app oficial. En NAVEE Monitor, antes de conectar, s
 
 Conectar y explorar. En la versión con etiquetas, buscar **Información del accesorio** y pulsar **Leer Fabricante del accesorio** y **Leer Modelo del accesorio**. Probar también la lectura de `2A07` y reintentar **Leer B001**. Si B001 falla, continuar con las otras lecturas y exportar el informe. No introducir UUID de características como si fueran servicios. Las lecturas ya existían en la versión anterior; las etiquetas y el detalle adicional de errores requieren publicar y recargar la versión actualizada.
 
-Nivel de confianza: UUID y propiedades de estos tres servicios observados en nRF Connect y NAVEE Monitor; lectura efectiva y significado de los payloads pendientes. BONDED no confirma autenticación de aplicación ni demuestra que el bonding sea imprescindible.
+Nivel de confianza: UUID y propiedades de estos tres servicios observados en nRF Connect y NAVEE Monitor; tres lecturas efectivas registradas en el tercer informe, pendientes de repetición. La semántica del protocolo propietario sigue sin confirmar. BONDED no confirma autenticación de aplicación ni demuestra que el bonding sea imprescindible.
 
 ### Resultado desde NAVEE Monitor — 2026-10-18
 
 El informe `navee-gatt-report (1).json` muestra tres servicios y 13 características: tres en D0FF, una en 1804 y nueve en información del accesorio. Once anuncian `read: true`. Todas tienen `value: null`. B001 contiene el error «Esta operación no está soportada por el dispositivo o el navegador», correspondiente a la traducción de `NotSupportedError` en el código; el archivo no conserva el nombre original de la excepción. No permite identificar la causa concreta del rechazo. Las otras diez características con READ no tienen valores ni errores registrados.
 
 `incomplete: false` indica que el descubrimiento terminó sin errores ni truncamiento registrados; no significa que las lecturas hayan funcionado. El usuario no localizó las opciones de lectura con los títulos genéricos anteriores. Se añaden etiquetas por UUID de servicio y característica, botones identificados y fecha del último intento. Estas mejoras no resuelven por sí mismas el rechazo de B001. Véase el registro en `pruebas.md`.
+
+### Primeros valores recibidos — tercer informe del 2026-10-18
+
+Fuente: `navee-gatt-report_(3)[1].json`, exportado a las `2026-10-18T12:16:20.731Z`. Dirección de las tres lecturas: patinete → aplicación. Los UUID completos de accesorio usan el sufijo `-6352-4d57-a7b4-003a416fbb0b`.
+
+| Servicio / característica | Timestamp UTC de recepción | Payload HEX | Observación |
+| --- | --- | --- | --- |
+| Información del accesorio / `6aa50002` | `2026-10-18T12:15:40.504Z` | `52 65 61 6C 74 65 6B 00` | Texto `Realtek` seguido de byte nulo; 8 bytes |
+| Información del accesorio / `6aa50003` | `2026-10-18T12:15:51.300Z` | `52 65 61 6C 74 65 6B 20 52 65 66 65 72 65 6E 63 65 20 49 6D 70 6C 65 6D 65 6E 74 61 74 69 6F 6E 00` | Texto `Realtek Reference Implementation` seguido de byte nulo; 33 bytes |
+| `1804` / `2A07` | `2026-10-18T12:16:14.430Z` | `07` | Entero 7; 1 byte |
+
+La vista ASCII sustituye el byte final `00` por un punto; ese punto no forma parte del nombre. Los textos son valores devueltos en los campos etiquetados fabricante/modelo del accesorio. No identifican por sí solos el chip exacto, el modelo del patinete, su controlador ni su firmware.
+
+Según la definición estándar de Tx Power Level (entero con signo de un byte), `07` corresponde a +7 dBm de potencia de transmisión Bluetooth declarada por el dispositivo. Es una interpretación del atributo estándar, no una medición independiente de radio ni un campo de potencia del motor. Referencias: [Bluetooth SIG, GATT Specification Supplement, Tx Power Level](https://btprodspecificationrefs.blob.core.windows.net/gatt-specification-supplement/GATT_Specification_Supplement.pdf) y [Nordic, TX Power Service: unidades dBm](https://docs.nordicsemi.com/r/bundle/nrf5_sdk_v9.0.0/page/group_ble_sdk_srv_tps.html?contentId=JDXkJm6s1ml2vnJAGVU6Dg).
+
+Nivel de confianza: bytes observados en una lectura por característica; repetir para comprobar reproducibilidad. B001 tiene `lastReadAttemptAt: null` en esta exploración: no se considera resuelto su `NotSupportedError` anterior. Las otras siete características de información del accesorio tampoco registran intentos de lectura.
+
+Siguiente comprobación: repetir las tres lecturas conocidas y leer la versión de firmware del accesorio, conservando los bytes sin atribuirlos al ESC/BMS. Exportar antes de reconectar o explorar de nuevo. Para acotar el problema de B001, comparar una lectura manual en nRF Connect en una conexión separada. No enviar comandos a B002; la finalidad de D0FF/B003 sigue sin determinarse.
+
+### Firmware del accesorio y B001 — cuarto informe
+
+La prueba posterior del cuarto informe (`2026-10-18T14:14:34.936Z`) vuelve a registrar `NotSupportedError` en B001. Además, la característica de versión de firmware del accesorio `6aa50007-6352-4d57-a7b4-003a416fbb0b` devuelve `01 01 01 00` (4 bytes, recepción `2026-10-18T14:13:45.092Z`). El formato de esos bytes no está confirmado: no se presenta como una versión decimal con puntos ni como firmware del controlador. Véase el registro detallado en `pruebas.md`.
 
 ## Servicios estándar propuestos para la primera comprobación
 

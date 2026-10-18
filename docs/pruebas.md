@@ -42,6 +42,26 @@ Solo se guarda en memoria la última lectura por característica. Exportar antes
 
 ## Registro de pruebas reales
 
+### 2026-10-18 — Firmware del accesorio y nuevo rechazo de B001
+
+- Fuente: `navee-gatt-report_(4)[1].json`; no se incorpora el archivo original.
+- Descubrimiento: `2026-10-18T14:12:48.208Z`. Exportación: `2026-10-18T14:14:34.936Z` (16:14:34 en Europe/Madrid). Conexión activa, sin operación pendiente ni informe obsoleto, tres servicios y 13 características.
+- B001 se intenta leer a las `2026-10-18T14:13:07.370Z`: `NotSupportedError`, sin valor recibido. Se reproduce el rechazo registrado en los informes anteriores que intentaron esa lectura.
+- La característica `6aa50007-6352-4d57-a7b4-003a416fbb0b`, etiquetada Accessory Firmware Version dentro del servicio `87290102-3c51-43b1-a1a9-11b9dc38478b`, devuelve cuatro bytes `01 01 01 00` a las `2026-10-18T14:13:45.092Z`, sin error. Dirección: patinete → aplicación. Es una observación de payload, pendiente de confirmar su formato de versión y reproducibilidad; no se interpreta como firmware ESC/BMS.
+- Las demás características no registran intentos en esta exploración. El mensaje general «Lectura recibida» corresponde al resultado más reciente y no implica que B001 haya funcionado.
+- Siguiente prueba: desconectar NAVEE Monitor, conectar con nRF Connect en CLIENT, abrir el servicio `0000d0ff-3c17-d293-8e48-14fe2e4da212` y leer la característica Unknown Characteristic `0xB001` con su flecha hacia abajo (no el descriptor `2901`). Registrar el valor o error exacto. Su finalidad sigue desconocida.
+
+### 2026-10-18 — Primeras tres lecturas recibidas desde NAVEE Monitor
+
+- Fuente: `navee-gatt-report_(3)[1].json`; no se incorpora el archivo original al repositorio.
+- Descubrimiento: `2026-10-18T12:15:04.748Z`. Exportación: `2026-10-18T12:16:20.731Z` (14:16:20 en Europe/Madrid).
+- Se mantienen tres servicios y 13 características. Conexión activa, sin operación pendiente ni informe obsoleto; descubrimiento sin errores registrados (`incomplete: false`).
+- Tres características tienen intento y valor recibido, sin error: fabricante del accesorio (`6aa50002…`) devuelve `Realtek` más byte nulo; modelo (`6aa50003…`) devuelve `Realtek Reference Implementation` más byte nulo; potencia Bluetooth (`2A07`) devuelve `07`. Payloads completos, UUID y timestamps en `servicios-gatt.md`.
+- B001 no registra intento en esta exploración. La ausencia de error en esta sesión no resuelve el rechazo documentado anteriormente. Las otras siete características del accesorio no se han intentado leer en la exploración exportada.
+- Resultado: lectura manual y exportación de valores reales verificadas en esta sesión. No demuestra lectura correcta de todos los atributos ni acceso a batería de tracción, velocidad, kilometraje o firmware del controlador.
+- Entorno y versiones: no comunicados; unidad del proyecto según el contexto. Los textos leídos no verifican el modelo exacto del patinete.
+- Próximo paso: repetir las lecturas obtenidas, leer versión de firmware del accesorio y exportar antes de volver a explorar/reconectar. Comparar B001 con una lectura en nRF Connect en una conexión separada, sin escrituras a B002.
+
 ### 2026-10-18 — Repetición con diagnóstico de lectura actualizado
 
 - Fuente: `navee-gatt-report (2).json`; se documenta el resultado sin incorporar el archivo original.
