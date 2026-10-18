@@ -42,6 +42,16 @@ Solo se guarda en memoria la última lectura por característica. Exportar antes
 
 ## Registro de pruebas reales
 
+### 2026-10-18 — B001 devuelve GATT NOT FOUND en nRF Connect
+
+- Fuentes: `error[1].txt` y `debug[1].txt`. Ambos archivos tienen el mismo contenido; se cuenta una única sesión. No se incorporan los originales porque incluyen la dirección Bluetooth.
+- Conexión correcta a las `16:31:11.646` y descubrimiento correcto a las `16:31:13.271` (status 0). Tiempos del log, sin zona horaria explícita.
+- B001 aparece con READ. Solicitud de lectura a las `16:31:17.444`, seguida de `Error 10 (0xa): GATT NOT FOUND` a las `16:31:17.542`. Confirma que se intentó leer la característica correcta y que falló también en nRF Connect.
+- El descriptor `2901` se lee después con éxito a las `16:31:19.747`: 22 bytes que representan `V1 read characteristic`. HEX completo en `servicios-gatt.md`.
+- Las excepciones de permiso `BLUETOOTH_PRIVILEGED` siguen a llamadas de notificación de `2A4D` (HID), antes de leer B001. No se usan para explicar el fallo de B001.
+- El log incluye `setCharacteristicNotification` para B003 pero ninguna escritura de su configuración remota ni recepción de valores. No demuestra una suscripción completa ni ausencia de emisión por el dispositivo.
+- Resultado: rechazo de lectura documentado en navegador y aplicación nativa; causa concreta y función de B001 aún desconocidas. La conexión general y otras lecturas sí funcionan. Próxima investigación: comprobar de forma explícita la suscripción a B003 y observar si llegan notificaciones, sin enviar comandos a B002; no interpretar el silencio si la activación no está confirmada.
+
 ### 2026-10-18 — Firmware del accesorio y nuevo rechazo de B001
 
 - Fuente: `navee-gatt-report_(4)[1].json`; no se incorpora el archivo original.

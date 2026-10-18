@@ -38,6 +38,20 @@ No hay payload visible ni semántica confirmada. Hipótesis: la combinación de 
 
 La duplicación visual de `2902` se conserva como observación, sin inferir el número real de descriptores hasta disponer de handles o un volcado adicional.
 
+Observación adicional comunicada por el usuario el 2026-10-18 en nRF Connect: el descriptor `2901` (Characteristic User Description) de B001 muestra el texto `V1 read characteristic`. Es una descripción asociada a B001, no el valor de la característica B001. No se dispone del HEX ni del timestamp de esta lectura. El significado de `V1` sigue desconocido: no identifica una versión de firmware ni confirma el protocolo de telemetría. Sigue pendiente obtener el valor o error de una lectura directa de B001 en nRF Connect, mediante la flecha de la característica situada encima de Descriptors.
+
+El usuario aclara después que al pulsar las flechas de lectura solo obtiene esa descripción y no aparece ningún valor de B001. Se registra como ausencia de valor visible en nRF Connect, sin atribuir un código de error ni concluir que la respuesta esté vacía. La siguiente comprobación es revisar el registro de esa operación: menú **Show log** o deslizar el panel de servicios hacia la derecha, según la [documentación de Nordic](https://github.com/nordicsemi/Android-nRF-Connect/blob/main/documentation/README.md#connection). El resultado nativo permitirá distinguir un rechazo, una lectura vacía o una operación sin respuesta registrada.
+
+#### Resultado del registro de nRF Connect — 2026-10-18
+
+Los archivos `error[1].txt` y `debug[1].txt` aportados después contienen la misma sesión (contenido idéntico), no dos pruebas independientes. Resuelven la duda anterior: a las `16:31:17.444` se invoca `gatt.readCharacteristic(0000b001-0000-1000-8000-00805f9b34fb)` y a las `16:31:17.542` aparece `Error 10 (0xa): GATT NOT FOUND`. B001 se descubre con READ pero su lectura falla también desde la aplicación nativa. No es una lectura vacía ni un problema limitado a localizar el botón en NAVEE Monitor.
+
+El código `0x0A` corresponde a Attribute Not Found en [Bluetooth SIG, ATT](https://www.bluetooth.com/wp-content/uploads/Files/Specification/HTML/Core-54/out/en/host/attribute-protocol--att-.html). El log no determina por qué un atributo descubierto produce ese resultado ni prueba un fallo concreto de firmware, caché o autenticación. Tampoco permite asegurar la equivalencia interna con el `NotSupportedError` del navegador.
+
+La lectura posterior del descriptor `2901` sí responde, a las `16:31:19.747`, con `56 31 20 72 65 61 64 20 63 68 61 72 61 63 74 65 72 69 73 74 69 63` (22 bytes): `V1 read characteristic`. Los tiempos son los mostrados por nRF Connect, sin zona horaria explícita. Dirección: dispositivo → aplicación; semántica de B001 desconocida.
+
+Las dos excepciones `BLUETOOTH_PRIVILEGED` preceden a la lectura de B001 y siguen a llamadas de notificación sobre `2A4D` del servicio HID. No se atribuyen a B001. Para B003 se ve una llamada `setCharacteristicNotification(..., true)`, pero no una escritura de su descriptor de configuración ni notificaciones recibidas: no se considera comprobada una suscripción remota efectiva. La finalidad de B003 sigue pendiente y cualquier prueba de recepción debe verificar la activación antes de interpretar el silencio.
+
 ### Información del accesorio: `87290102-3c51-43b1-a1a9-11b9dc38478b`
 
 Capturas `110214` y `110225`. Todas las características siguientes muestran READ. Sus UUID tienen la forma `<prefijo>-6352-4d57-a7b4-003a416fbb0b`:
